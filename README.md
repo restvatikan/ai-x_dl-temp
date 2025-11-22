@@ -33,7 +33,7 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
           * [3.3.1. Morpheme-level 1D-CNN](https://www.google.com/search?q=%23331-morpheme-level-1d-cnn)
           * [3.3.2. Syllable/Jamo-level 1D-CNN](https://www.google.com/search?q=%23332-syllablejamo-level-1d-cnn)
 4.  [전처리 파이프라인 상세](https://www.google.com/search?q=%234-%EC%A0%84%EC%B2%98%EB%A6%AC-%ED%8C%8C%EC%9D%B4%ED%94%84%EB%9D%BC%EC%9D%B8-%EC%83%81%EC%84%B8-preprocessing-pipeline)
-5.  [실험 결과 및 분석https://www.google.com/search?q=%235-%EC%8B%A4%ED%97%98-%EA%B2%B0%EA%B3%BC-%EB%B0%8F-%EB%B6%84%EC%84%9D-results--analysis)
+5.  [실험 결과 및 분석](https://www.google.com/search?q=%235-%EC%8B%A4%ED%97%98-%EA%B2%B0%EA%B3%BC-%EB%B0%8F-%EB%B6%84%EC%84%9D-results--analysis)
 6.  [결론 및 향후 과제](https://www.google.com/search?q=%236-%EA%B2%B0%EB%A1%A0-%EB%B0%8F-%ED%96%A5%ED%9B%84-%EA%B3%BC%EC%A0%9C-conclusion)
 7.  [사용 방법](https://www.google.com/search?q=%237-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95-usage)
 
