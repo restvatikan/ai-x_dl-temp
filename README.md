@@ -88,38 +88,44 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 └── requirements.txt            # 필요 라이브러리 목록
 ```
 
+-----
+
 ## 5\. 적용 방법론
 
 ### 5.1. 텍스트 전처리 및 벡터화
 
-텍스트 데이터를 모델이 이해할 수 있는 숫자형 벡터로 변환합니다.
+텍스트 데이터를 모델이 이해할 수 있는 숫자형 벡터로 변환하는 과정은 **기초 전처리(Basic)**와 **심화 전처리(Advanced)**의 두 단계로 나누어 모델에 적용됩니다.
 
-  * **형태소 분석 (Tokenization):** 위에서 언급한 Java 비의존적 토크나이저 (예: `Mecab`)를 사용합니다.
-  * **불용어(Stopwords) 제거:** 의미 없는 조사, 어미, 부사 등을 제거합니다.
-  * **벡터화 (Vectorization):**
-      * **TF-IDF (Term Frequency-Inverse Document Frequency):** ML 모델을 위한 특성 추출. 단어의 빈도와 문서 빈도의 역수를 활용하여 단어의 중요도를 계산합니다.
-      * **Word Embedding:** DL 모델을 위한 특성 추출. `Keras`의 `Embedding` 레이어를 사용하여 단어를 밀집 벡터(Dense Vector)로 표현합니다.
+| 전처리 단계 | 방법론 상세 | 적용 모델 |
+| :--- | :--- | :--- |
+| **기초 (Basic)** | 정규표현식(Regex)을 이용해 특수문자 및 노이즈 제거. 다중 공백 단일화. | 모든 ML/DL 모델의 베이스라인 비교 시 |
+| **심화 (Advanced)** | 1. **형태소 분석 및 어간 추출 (Stemming):** `okt.morphs(text, stem=True)` 사용 ($\rightarrow$ 단어 희소성 감소). 2. 사용자 정의 **불용어(Stopwords)** 및 단어 길이 1 이하 단어 제거. | 심화 ML (TF-IDF), Word2Vec, DL 모델 |
+
+* **벡터화 (Vectorization):**
+    * **TF-IDF (Term Frequency-Inverse Document Frequency):** ML 모델을 위한 특성 추출. (Count-based)
+    * **Word2Vec (Distributed Representation):** 문맥을 고려한 분산 표현 학습 후, 문서의 모든 단어 벡터를 **평균(Averaging)**하여 고정된 길이의 문서 벡터를 생성합니다. (Embedding-based)
+    * **Word Embedding (Keras):** DL 모델을 위한 학습 기반 임베딩.
 
 ### 5.2. 머신러닝 (Shallow Learning) 모델
 
-`Scikit-learn` 라이브러리를 기반으로 하며, **TF-IDF**로 벡터화된 데이터를 입력으로 받습니다.
+`Scikit-learn` 라이브러리를 기반으로 하며, **TF-IDF** 및 **Word2Vec**으로 벡터화된 데이터를 입력으로 받습니다.
 
-  * **로지스틱 회귀 (Logistic Regression):**
-      * 선형 모델 기반의 이진 분류기. 빠르고 해석이 용이하며 강력한 베이스라인 성능을 제공합니다.
-  * **결정 트리 (Decision Tree):**
-      * 트리 구조를 기반으로 데이터를 분류. 과적합(Overfitting) 경향이 있으나 직관적입니다.
-  * **랜덤 포레스트 (Random Forest):**
-      * (앙상블 섹션에서 다룰 수 있으나, 단일 모델로도 분류) 배깅(Bagging) 기반의 앙상블 모델. 결정 트리의 과적합을 완화합니다.
+* **로지스틱 회귀 (Logistic Regression):**
+    * 선형 모델 기반의 이진 분류기. **TF-IDF**와 **Word2Vec** 두 가지 특성 추출 방식에 대해 성능을 비교합니다.
+* **결정 트리 (Decision Tree):**
+    * 트리 구조를 기반으로 데이터를 분류.
+* **랜덤 포레스트 (Random Forest):**
+    * 배깅(Bagging) 기반의 앙상블 모델.
 
-### 5.3. 딥러닝 (Deep Learning) 모델
+### 5.3. 딥러닝 (Deep Learning) 모델 (변동 없음)
 
 `TensorFlow/Keras`를 기반으로 하며, **Word Embedding**을 입력으로 받습니다.
 
   * **1D CNN (Convolutional Neural Network):**
       * 텍스트의 지역적 특징(Local Feature)을 추출하는 데 효과적입니다. (예: "정말 재밌")
       * 합성곱 필터(Filter)가 텍스트를 스캔하며 특징 맵(Feature Map)을 생성하고, 이를 풀링(Pooling)하여 최종적으로 감성을 분류합니다.
-        
-### 5.4. 앙상블 (Ensemble) 기법
+
+### 5.4. 앙상블 (Ensemble) 기법 (변동 없음)
 
 여러 개의 기본 모델(Base Models)을 결합하여 단일 모델보다 강력한 성능을 도출합니다.
 
@@ -127,29 +133,41 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
       * 여러 모델(예: 로지스틱 회귀, CNN)의 예측 결과를 다수결(Hard Voting) 또는 확률 평균(Soft Voting)으로 합산하여 최종 예측을 결정합니다.
   * **Stacking:**
       * 1단계 모델들의 예측 결과를 다시 학습 데이터로 사용하여, 2단계 모델(Meta-learner)이 최종 예측을 학습하는 방식입니다.
+---
 
-## 6\. 실험 과정 및 결과
+### 6. 실험 과정 및 결과
 
-### 6.1. 평가 지표
+#### 6.1. 평가 지표 (변동 없음)
 
 본 데이터셋은 레이블(0, 1)이 비교적 균형 잡혀 있으므로, **정확도(Accuracy)** 를 메인 지표로 사용합니다.
 
 $$\text{Accuracy} = \frac{\text{True Positives (TP)} + \text{True Negatives (TN)}}{\text{Total Data}}$$
 
-### 6.2. 모델별 성능 비교
+#### 6.2. 모델별 성능 비교
 
-`ratings_test.txt` (50,000개)에 대한 최종 성능 비교표입니다. (아래 표는 아직 placeholder입니다다)
+`ratings_test.txt` (50,000개)에 대한 최종 성능 비교표입니다. (성능 수치는 예시이며, 실제 프로젝트 수행 시 채워 넣어야 합니다.)
 
-| 모델 (Model) | 특성 추출 (Feature Extraction) | 정확도 (Accuracy) | F1-Score | 비고 (Notes) |
-| :--- | :--- | :---: | :---: | :--- |
-| **Baseline (ML)** | | | | |
-| 로지스틱 회귀 | TF-IDF (n-gram=1,3) | 85.1% | 0.850 | 하이퍼파라미터 튜닝 (C=1) |
-| 결정 트리 | TF-IDF (n-gram=1,3) | 72.5% | 0.723 | 과적합 경향 확인 |
-| 랜덤 포레스트 | TF-IDF (n-gram=1,3) | 82.0% | 0.819 | |
-| **Deep Learning** | | | | |
-| 1D CNN | Keras Embedding (100d) | 84.8% | 0.847 | 10 Epochs, Dropout=0.5 |
-| **Ensemble** | | | | |
-| 앙상블 (Voting) | (LR + CNN) Soft Vote | **85.9%** | **0.858** | 가장 우수한 성능 |
+| 모델 (Model) | 전처리 방식 (Preprocessing) | 특성 추출 (Feature Extraction) | 정확도 (Accuracy) | F1-Score | 비고 (Notes) |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **A. ML 베이스라인 비교** | | | | | |
+| 로지스틱 회귀 | 기초 (Basic Regex) | TF-IDF | 79.2% | 0.791 | **베이직 전처리 기준점** |
+| 로지스틱 회귀 | 심화 (Advanced Okt) | TF-IDF | **82.8%** | **0.827** | 심화 전처리의 기여 확인 ($\uparrow 3.6\%$) |
+| 로지스틱 회귀 | 심화 (Advanced Okt) | Word2Vec (Dim=100) | 81.1% | 0.810 | TF-IDF 대비 비교 |
+| **B. ML/DL 심화 비교** | | | | | |
+| 결정 트리 | 심화 (Advanced Okt) | TF-IDF | 72.5% | 0.723 | |
+| 랜덤 포레스트 | 심화 (Advanced Okt) | TF-IDF | 82.0% | 0.819 | |
+| 1D CNN | 심화 (Advanced Okt) | Keras Embedding | 84.8% | 0.847 | |
+| **C. 앙상블** | | | | | |
+| 앙상블 (Voting) | (LR + CNN) Soft Vote | - | **85.9%** | **0.858** | 최종 최적 성능 |
+
+
+### 6.3. 심화 전처리 적용 효과 분석
+
+특히 `ML Baseline 1`과 `ML Advanced 1`의 성능 차이를 비교하여 **Okt 형태소 분석** 및 **어간 추출** 기법이 한국어 텍스트 감성 분석에 얼마나 큰 기여를 했는지 수치적으로 증명합니다.
+
+> 
+
+-----
 
 ## 7\. 성능 개선 시도
 
