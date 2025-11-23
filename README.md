@@ -29,12 +29,16 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
         - [3.1.2. Word2Vec 임베딩 모델링](#312-word2vec-임베딩-모델링)
         - [3.1.3. 결정 트리 (Decision Tree)](#313-결정-트리-decision-tree)
     - [3.2. 딥러닝 모델 (1D-CNN)](#32-딥러닝-모델-1d-cnn)
-        - [3.2.1. Morpheme-level 1D-CNN](#321-morpheme-level-1d-cnn-형태소-단위)
-        - [3.2.2. Syllable-level 1D-CNN](#322-syllable-level-1d-cnn-음절-단위)
-        - [3.2.3. Jamo-level 1D-CNN](#323-jamo-level-1d-cnn-자소-단위)
+        - [3.2.1. Morpheme-level 1D-CNN (형태소 단위)](#321-morpheme-level-1d-cnn-형태소-단위)
+        - [3.2.2. Syllable-level 1D-CNN (음절 단위)](#322-syllable-level-1d-cnn-음절-단위)
+        - [3.2.3. Jamo-level 1D-CNN (자소 단위)](#323-jamo-level-1d-cnn-자소-단위)
     - [3.3. 딥러닝 모델 (LSTM)](#33-딥러닝-모델-lstm)
-        - [3.3.1. Morpheme-level LSTM](#331-morpheme-level-lstm-형태소-단위)
+        - [3.3.1. Morpheme-level LSTM (형태소 단위)](#331-morpheme-level-lstm-형태소-단위)
 4. [전처리 파이프라인 상세](#4-전처리-파이프라인-상세-preprocessing-strategy)
+5. [최종 성능 평가 및 분석 (Final Evaluation)](#5-최종-성능-평가-및-분석-final-evaluation)
+    - [5.1. 예측 결과 저장 (Inference & Logging)](#51-예측-결과-저장-inference--logging)
+    - [5.2. 성능 지표 계산 및 시각화 (Metrics & Visualization)](#52-성능-지표-계산-및-시각화-metrics--visualization)
+
 
 -----
 
@@ -158,9 +162,11 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 *   **입력:** `Okt`를 통해 전처리(Stemming, Stopwords Removal)된 형태소 시퀀스.
 *   **[사용 라이브러리]**
     *   **Preprocessing:** `konlpy.tag.Okt`
-    *   **Model:** `torch.nn` (Embedding, LSTM, Linear)
-    *   **Utils:** `torch.nn.utils.rnn` (pad_sequence, pack_padded_sequence - 가변 길이 처리용)
+    *   **Model:** `torch.nn` (Embedding, LSTM, Linear, Dropout)
+    *   **Sequence Handling:** `torch.nn.utils.rnn` (`pad_sequence`, `pack_padded_sequence`, `pad_packed_sequence`)
+        *   *Note: 가변 길이 시퀀스의 효율적 학습을 위해 패딩(Padding) 및 패킹(Packing) 기법을 적용합니다.*
     *   **Optim:** `torch.optim`
+
 
 -----
 
@@ -191,5 +197,28 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 2.  **Jamo Decomposition:** `jamo` 패키지 활용.
     *   `h2j()`: 한글 음절을 초/중/종성으로 분리.
     *   `j2hcj()`: 분리된 자모를 호환 자모(Compatibility Jamo) 코드로 변환하여 학습 가능한 시퀀스로 생성.
+
+-----
+
+## 5\. 최종 성능 평가 및 분석 (Final Evaluation) (신규 추가)
+
+모든 모델의 학습이 완료된 후, Test Set(50,000개)에 대한 객관적인 성능 비교를 위해 통일된 평가 프로세스를 진행합니다.
+
+### 5.1. 예측 결과 저장 (Inference & Logging)
+각 모델(3.1 ~ 3.3)로 테스트 데이터셋에 대한 추론을 수행하고, 예측된 라벨(0 또는 1)을 텍스트 파일로 저장합니다. 이를 통해 실험 코드를 다시 돌리지 않고도 결과를 영구적으로 보존하고 분석할 수 있습니다.
+*   **Output Format:** `prediction_[ModelName].txt` (각 행에 0 또는 1 기록)
+*   **[사용 라이브러리]**
+    *   `torch` (Inference mode: `with torch.no_grad():`)
+    *   `sklearn` (Model `predict` method for ML models)
+    *   `numpy` (Array handling)
+
+### 5.2. 성능 지표 계산 및 시각화 (Metrics & Visualization)
+저장된 예측 파일들과 정답 라벨(`ratings_test.txt`)을 로드하여 최종 성능을 계산합니다. 단순 정확도(Accuracy)뿐만 아니라, 모델이 어떤 클래스를 헷갈려하는지 파악하기 위해 혼동 행렬(Confusion Matrix)을 시각화합니다.
+1.  **Accuracy Calculation:** 전체 테스트 데이터 중 올바르게 분류한 비율 계산.
+2.  **Confusion Matrix:** True Positive, True Negative, False Positive, False Negative 분포 확인.
+*   **[사용 라이브러리]**
+    *   **Metrics:** `sklearn.metrics.accuracy_score`, `sklearn.metrics.confusion_matrix`
+    *   **Data Handling:** `pandas` (결과 집계), `numpy`
+    *   **Visualization:** `matplotlib.pyplot`, `seaborn` (Heatmap 시각화)
 
 -----
