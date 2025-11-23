@@ -101,7 +101,7 @@
 *   **[사용 라이브러리]**
     *   **전처리:** `mecab.MeCab` (Exp 1-2 only)
     *   **특성 추출:** `sklearn.feature_extraction.text.TfidfVectorizer`
-    *   **모:** `sklearn.linear_model.LogisticRegression`
+    *   **모델:** `sklearn.linear_model.LogisticRegression`
 
 #### 3.1.2. Word2Vec 임베딩 모델링
 단어의 의미 정보를 반영하는 Word2Vec 임베딩을 적용한 후, 문장 내 단어 벡터들의 평균(Mean Pooling)값을 입력으로 사용합니다.
