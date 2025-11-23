@@ -71,20 +71,16 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
   - **Platform:** Google Colab (GPU T4 Runtime)
   - **Python Version:** Python 3.12.12
   - **Key Libraries:** `scikit-learn`, `konlpy`, `gensim`, `jamo`, `torch`, `pandas`, `numpy`, `matplotlib`, `tqdm`
-  - **Library Installation:** 본 프로젝트는 단일 `.ipynb` 환경에서 수행됩니다. KoNLPy의 원활한 구동을 위한 **Java(JDK 11)** 설치와 데이터 분석 및 모델링을 위한 공통 라이브러리 설치 코드는 아래와 같습니다.
+  - **Library Installation:** 본 프로젝트는 단일 `.ipynb` 환경에서 수행됩니다. 빠른 속도와 높은 정확도를 위해 **Mecab** 형태소 분석기를 사용하며, 필요한 라이브러리 설치 코드는 아래와 같습니다.
 
   ```python
-  # 1. Install JDK for KoNLPy (Required for morphological analysis)
-  !apt-get update
-  !apt-get install openjdk-11-jdk -y
+  # 1. Install Mecab (Korean Morphological Analyzer)
+  # C++ based, extremely fast compared to Java-based KoNLPy
+  !pip install python-mecab-ko
 
-  # 2. Set JAVA_HOME environment variable
-  import os
-  os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
-
-  # 3. Install Common Libraries
-  # konlpy: 형태소 분석 / jamo: 자소 분리 / gensim: Word2Vec / torch: 딥러닝
-  !pip install konlpy jamo gensim torch scikit-learn pandas numpy matplotlib tqdm
+  # 2. Install Common Libraries
+  # jamo: 자소 분리 / gensim: Word2Vec / torch: 딥러닝
+  !pip install jamo gensim torch scikit-learn pandas numpy matplotlib tqdm
   ```
 
 -----
@@ -95,23 +91,23 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 
 ### 3.1. 통계 기반 머신러닝 (Baseline)
 
-가장 기본적인 모델인 로지스틱 회귀(Logistic Regression)와 결정 트리(Decision Tree)를 사용하여, **텍스트 전처리(Stemming & Stopwords Removal)의 유무**가 성능에 미치는 영향을 직접적으로 비교합니다.
+가장 기본적인 모델인 로지스틱 회귀(Logistic Regression)와 결정 트리(Decision Tree)를 사용하여, **텍스트 전처리(Morphological Analysis & Stopwords Removal)의 유무**가 성능에 미치는 영향을 직접적으로 비교합니다.
 
 #### 3.1.1. TF-IDF 기반 모델링
 단어의 빈도를 가중치로 사용하는 TF-IDF 벡터화 방식을 사용합니다.
 *   **Exp 1-1. TF-IDF (Raw):** 형태소 분석 없이 띄어쓰기(Whitespace) 기준으로 토큰화하며, 불용어 처리를 하지 않은 순수 데이터.
-*   **Exp 1-2. TF-IDF (Preprocessed):** `Okt` 형태소 분석기를 사용하여 어간 추출(Stemming) 및 불용어 제거를 수행한 정제된 데이터.
+*   **Exp 1-2. TF-IDF (Preprocessed):** **`Mecab`** 분석기를 사용하여 조사/어미 등을 정교하게 분리하고 불용어를 제거한 데이터.
 *   **[사용 라이브러리]**
-    *   **Preprocessing:** `konlpy.tag.Okt` (Exp 1-2 only)
+    *   **Preprocessing:** `mecab.MeCab` (Exp 1-2 only)
     *   **Feature Extraction:** `sklearn.feature_extraction.text.TfidfVectorizer`
     *   **Model:** `sklearn.linear_model.LogisticRegression`
 
 #### 3.1.2. Word2Vec 임베딩 모델링
 단어의 의미 정보를 반영하는 Word2Vec 임베딩을 적용한 후, 문장 내 단어 벡터들의 평균(Mean Pooling)값을 입력으로 사용합니다.
 *   **Exp 2-1. Word2Vec (Raw):** 전처리 없는 띄어쓰기 기준 토큰의 임베딩 학습.
-*   **Exp 2-2. Word2Vec (Preprocessed):** 어간 추출 및 불용어가 제거된 토큰의 임베딩 학습.
+*   **Exp 2-2. Word2Vec (Preprocessed):** 형태소 분절 및 불용어 제거를 수행한 토큰의 임베딩 학습.
 *   **[사용 라이브러리]**
-    *   **Preprocessing:** `konlpy.tag.Okt` (Exp 2-2 only)
+    *   **Preprocessing:** `mecab.MeCab` (Exp 2-2 only)
     *   **Embedding:** `gensim.models.Word2Vec`
     *   **Operation:** `numpy` (Mean Pooling)
     *   **Model:** `sklearn.linear_model.LogisticRegression`
@@ -121,7 +117,7 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 *   **Exp 3-1. Decision Tree (Raw):** 전처리 없는 고차원 데이터 학습.
 *   **Exp 3-2. Decision Tree (Preprocessed):** 핵심 형태소만 남긴 데이터 학습.
 *   **[사용 라이브러리]**
-    *   **Preprocessing:** `konlpy.tag.Okt` (Exp 3-2 only)
+    *   **Preprocessing:** `mecab.MeCab` (Exp 3-2 only)
     *   **Feature Extraction:** `sklearn.feature_extraction.text.TfidfVectorizer`
     *   **Model:** `sklearn.tree.DecisionTreeClassifier`
 
@@ -131,9 +127,9 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 
 #### 3.2.1. Morpheme-level 1D-CNN (형태소 단위)
 *   **특징:** 의미의 최소 단위인 형태소를 입력으로 사용합니다. 문법적 구조를 가장 잘 반영하는 정석적인 방법입니다.
-*   **입력:** `Okt`를 통해 전처리된 형태소 시퀀스.
+*   **입력:** `Mecab`을 통해 분절된 형태소 시퀀스.
 *   **[사용 라이브러리]**
-    *   **Preprocessing:** `konlpy.tag.Okt`
+    *   **Preprocessing:** `mecab.MeCab`
     *   **Model:** `torch.nn` (Embedding, Conv1d, Linear)
     *   **Optim:** `torch.optim`
 
@@ -158,10 +154,10 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 순차 데이터(Sequential Data) 처리에 특화된 RNN 계열의 LSTM을 사용하여, 문맥의 장기 의존성(Long-term Dependency)을 학습합니다. CNN이 지역적 특징(Local Feature) 추출에 강하다면, LSTM은 문장 전체의 흐름을 파악하는 데 강점이 있습니다.
 
 #### 3.3.1. Morpheme-level LSTM (형태소 단위)
-*   **특징:** 3.2.1의 CNN 모델과 동일한 '형태소 전처리 데이터'를 사용하여, 아키텍처(CNN vs LSTM)에 따른 성능 차이를 공정하게 비교합니다. 어간 추출과 불용어 제거를 통해 핵심 의미 단위의 시퀀스를 학습합니다.
-*   **입력:** `Okt`를 통해 전처리(Stemming, Stopwords Removal)된 형태소 시퀀스.
+*   **특징:** 3.2.1의 CNN 모델과 동일한 '형태소 전처리 데이터'를 사용하여, 아키텍처(CNN vs LSTM)에 따른 성능 차이를 공정하게 비교합니다. 정교한 형태소 분절과 불용어 제거를 통해 핵심 의미 단위의 시퀀스를 학습합니다.
+*   **입력:** `Mecab`을 통해 분절된 형태소 시퀀스.
 *   **[사용 라이브러리]**
-    *   **Preprocessing:** `konlpy.tag.Okt`
+    *   **Preprocessing:** `mecab.MeCab`
     *   **Model:** `torch.nn` (Embedding, LSTM, Linear, Dropout)
     *   **Sequence Handling:** `torch.nn.utils.rnn` (`pad_sequence`, `pack_padded_sequence`, `pad_packed_sequence`)
         *   *Note: 가변 길이 시퀀스의 효율적 학습을 위해 패딩(Padding) 및 패킹(Packing) 기법을 적용합니다.*
@@ -185,10 +181,11 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 > **적용 대상:** Exp 1-2, 2-2, 3-2 (Preprocessed 비교군) 및 **3.2.1 (Morpheme CNN), 3.3.1 (Morpheme LSTM)**
 *   한국어 문법 지식을 활용하여 의미 단위로 데이터를 압축합니다.
 1.  **Basic Cleaning:** Pipeline A와 동일 (결측치 및 특수문자 제거).
-2.  **Morphological Analysis:** `Konlpy`의 `Okt` 분석기 사용.
-    *   `stem=True` 옵션 적용: 용언의 활용형을 기본형으로 통일 (예: '재밌었다' -> '재밌다').
+2.  **Morphological Analysis:** **`Mecab` (python-mecab-ko)** 사용.
+    *   **Precise Segmentation:** 문장을 형태소 단위로 정밀하게 분해 (예: '재밌었다' -> '재밌', '었', '다').
+    *   *Note: Okt와 달리 인위적인 원형 복원(Stemming)을 수행하지 않고, 형태소 본연의 의미를 보존하여 학습에 활용함.*
 3.  **Stopwords Removal:** 조사, 접속사 등 의미 기여도가 낮은 불용어 리스트 정의 및 제거.
-4.  **Filtering:** 길이가 1 이하인 토큰(의미 없는 자음 등) 제거.
+4.  **Filtering:** 길이가 1 이하인 토큰 제거.
 
 ### Pipeline C: Sub-character Preprocessing (Jamo)
 > **적용 대상:** 3.2.3 (Jamo CNN)
@@ -197,6 +194,11 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 2.  **Jamo Decomposition:** `jamo` 패키지 활용.
     *   `h2j()`: 한글 음절을 초/중/종성으로 분리.
     *   `j2hcj()`: 분리된 자모를 호환 자모(Compatibility Jamo) 코드로 변환하여 학습 가능한 시퀀스로 생성.
+
+### Data Efficiency Strategy (Pickle Caching)
+Google Colab의 런타임 초기화 문제에 대응하고 실험 효율성을 높이기 위해, 각 파이프라인을 거친 데이터는 **`pickle`** 형식으로 로컬에 캐싱(Caching)합니다.
+*   **목적:** 형태소 분석(Pipeline B) 및 자소 분리(Pipeline C) 과정을 매 실험마다 반복하지 않고, 저장된 리스트 객체를 즉시 로드하여 학습 시간을 단축합니다.
+*   **파일 포맷:** `train_morphs.pkl`, `train_jamo.pkl` 등.
 
 -----
 
