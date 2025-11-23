@@ -154,7 +154,7 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 순차 데이터(Sequential Data) 처리에 특화된 RNN 계열의 LSTM을 사용하여, 문맥의 장기 의존성(Long-term Dependency)을 학습합니다. CNN이 지역적 특징(Local Feature) 추출에 강하다면, LSTM은 문장 전체의 흐름을 파악하는 데 강점이 있습니다.
 
 #### 3.3.1. Morpheme-level LSTM (형태소 단위)
-*   **특징:** 3.2.1의 CNN 모델과 동일한 '형태소 전처리 데이터'를 사용하여, 아키텍처(CNN vs LSTM)에 따른 성능 차이를 공정하게 비교합니다. 어간 추출과 불용어 제거를 통해 핵심 의미 단위의 시퀀스를 학습합니다.
+*   **특징:** 3.2.1의 CNN 모델과 동일한 '형태소 전처리 데이터'를 사용하여, 아키텍처(CNN vs LSTM)에 따른 성능 차이를 공정하게 비교합니다. 정교한 형태소 분절과 불용어 제거를 통해 핵심 의미 단위의 시퀀스를 학습합니다.
 *   **입력:** `Mecab`을 통해 분절된 형태소 시퀀스.
 *   **[사용 라이브러리]**
     *   **Preprocessing:** `mecab.MeCab`
@@ -194,6 +194,11 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 2.  **Jamo Decomposition:** `jamo` 패키지 활용.
     *   `h2j()`: 한글 음절을 초/중/종성으로 분리.
     *   `j2hcj()`: 분리된 자모를 호환 자모(Compatibility Jamo) 코드로 변환하여 학습 가능한 시퀀스로 생성.
+
+### Data Efficiency Strategy (Pickle Caching)
+Google Colab의 런타임 초기화 문제에 대응하고 실험 효율성을 높이기 위해, 각 파이프라인을 거친 데이터는 **`pickle`** 형식으로 로컬에 캐싱(Caching)합니다.
+*   **목적:** 형태소 분석(Pipeline B) 및 자소 분리(Pipeline C) 과정을 매 실험마다 반복하지 않고, 저장된 리스트 객체를 즉시 로드하여 학습 시간을 단축합니다.
+*   **파일 포맷:** `train_morphs.pkl`, `train_jamo.pkl` 등.
 
 -----
 
