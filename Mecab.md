@@ -91,7 +91,7 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 
 ### 3.1. 통계 기반 머신러닝 (Baseline)
 
-가장 기본적인 모델인 로지스틱 회귀(Logistic Regression)와 결정 트리(Decision Tree)를 사용하여, **텍스트 전처리(Stemming & Stopwords Removal)의 유무**가 성능에 미치는 영향을 직접적으로 비교합니다.
+가장 기본적인 모델인 로지스틱 회귀(Logistic Regression)와 결정 트리(Decision Tree)를 사용하여, **텍스트 전처리(Morphological Analysis & Stopwords Removal)의 유무**가 성능에 미치는 영향을 직접적으로 비교합니다.
 
 #### 3.1.1. TF-IDF 기반 모델링
 단어의 빈도를 가중치로 사용하는 TF-IDF 벡터화 방식을 사용합니다.
@@ -105,7 +105,7 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
 #### 3.1.2. Word2Vec 임베딩 모델링
 단어의 의미 정보를 반영하는 Word2Vec 임베딩을 적용한 후, 문장 내 단어 벡터들의 평균(Mean Pooling)값을 입력으로 사용합니다.
 *   **Exp 2-1. Word2Vec (Raw):** 전처리 없는 띄어쓰기 기준 토큰의 임베딩 학습.
-*   **Exp 2-2. Word2Vec (Preprocessed):** 어간 추출 및 불용어가 제거된 토큰의 임베딩 학습.
+*   **Exp 2-2. Word2Vec (Preprocessed):** 형태소 분절 및 불용어 제거를 수행한 토큰의 임베딩 학습.
 *   **[사용 라이브러리]**
     *   **Preprocessing:** `mecab.MeCab` (Exp 2-2 only)
     *   **Embedding:** `gensim.models.Word2Vec`
