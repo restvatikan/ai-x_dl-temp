@@ -199,6 +199,11 @@ AI+X: 딥러닝 2025-2 기말 프로젝트
     *   `h2j()`: 한글 음절을 초/중/종성으로 분리.
     *   `j2hcj()`: 분리된 자모를 호환 자모(Compatibility Jamo) 코드로 변환하여 학습 가능한 시퀀스로 생성.
 
+### Data Efficiency Strategy (Pickle Caching)
+Google Colab의 런타임 초기화 문제에 대응하고 실험 효율성을 높이기 위해, 각 파이프라인을 거친 데이터는 **`pickle`** 형식으로 로컬에 캐싱(Caching)합니다.
+*   **목적:** 형태소 분석(Pipeline B) 및 자소 분리(Pipeline C) 과정을 매 실험마다 반복하지 않고, 저장된 리스트 객체를 즉시 로드하여 학습 시간을 단축합니다.
+*   **파일 포맷:** `train_morphs.pkl`, `train_jamo.pkl` 등.
+
 -----
 
 ## 5\. 최종 성능 평가 및 분석 (Final Evaluation)
