@@ -247,10 +247,15 @@
 | 9 | DT_Pre | 0.6590 | Machine Learning | 형태소 (Morpheme) |
 | 10 | DT_Raw | 0.5587 | Machine Learning | 어절 (Raw) |
 
+### 성능 비교 그래프
+<img src="Code+Result/model_accuracy_comparison.png" width="80%" alt="Model Performance Comparison">
+
 ### 혼동 행렬 (Confusion Matrix) 시각화
 상위 모델들은 긍정(1)과 부정(0)을 균형 있게 예측한 반면, 하위 모델(특히 Decision Tree Raw)은 특정 클래스로 예측이 편향되는 경향을 보였습니다.
 
-*(참고: 실험 코드 실행 시 `confusion_matrices.png` 및 `final_accuracy_comparison.png` 파일이 생성됩니다.)*
+<img src="Code+Result/confusion_matrices.png" width="80%" alt="Confusion Matrices">
+
+*(실험 코드 실행 시 `model_accuracy_comparison.png` 및 `confusion_matrices.png` 파일이 생성됩니다.)*
 
 -----
 
